@@ -35,4 +35,7 @@
   https://drive.google.com/file/d/1AVe18e0R4lTMn9yD1dmJQZZJghlggeAs/view
 
   ## Screenshot
+  ![svg](https://github.com/benjaminescobar1/logo-generator/assets/135399618/e6fe0483-dd6b-46c2-800d-395bc2e70668)
+
+  
   
