@@ -1,36 +1,97 @@
-//imports fs and readline files
-const fs = require('fs');
-const readline = require('readline');
+const inquirer = require("inquirer");
+const fs = require('fs')
+const { Triangle, Square, Circle } = require('./lib/shapes.js');
 
-//creates interface for user reading input
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-//Prompts questions for creating the logo type
-rl.question('Enter up to three characters: ', text => {
-    rl.question('Enter text color (keyword or hexadecimal): ', textColor => {
-        rl.question('Choose a shape (circle/triangle/square): ', shape => {
-            rl.question('Enter shape color (keyword or hexadecimal): ', shapeColor => {
-                rl.close();
-
-                // Creates the logo based on user input
-                const svgContent = `
-                    <svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
-                        <${shape} cx="150" cy="100" r="50" fill="${shapeColor}" />
-                        <text x="150" y="100" text-anchor="middle" alignment-baseline="central" fill="${textColor}">
-                            ${text}
-                        </text>
-                    </svg>
-                `;
-
-                //Creates file named "logo.svg"
-                fs.writeFileSync('logo.svg', svgContent);
-
-                //console logs the logo being generated
-                console.log('Generated logo.svg');
-            });
-        });
+function writeToFile(fileName, data) {
+    fs.writeFile(fileName, data, function (err) {
+        if (err) throw err;
+        console.log(`File ${fileName} was created`);
     });
-});
+}
+
+// questions for user
+function init() {
+    const questions = [
+        "Enter text for your shape:",
+        "Enter a color for your text (keyword or hexidecimal):",
+        "Select a shape:",
+        "Enter a color for your shape (keyword or hexidecimal):",
+    ];
+
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'text',
+            message: questions[0],
+            validate: function (input) {
+                if (input.length > 3) {
+                    return "Please enter a maximum of 3 characters.";
+                }
+                return true;
+            }
+        },
+        {
+            type: 'input',
+            name: 'textColor',
+            message: questions[1],
+            validate: function(input) {
+                const validColorOrHex = /^#?([0-9a-fA-F]{3}){1,2}$|^[a-z]+$/i.test(input);
+                if (validColorOrHex) {
+                  return true;
+                } else {
+                  return 'Please enter a valid color name or hexadecimal code.';
+                }
+              }
+        },
+        {
+            type: 'list',
+            name: 'shape',
+            message: questions[2],
+            choices: ['Triangle', 'Square', 'Circle',]
+        },
+        {
+            type: 'input',
+            name: 'shapeColor',
+            message: questions[3],
+            validate: function(input) {
+                const validColorOrHex = /^#?([0-9a-fA-F]{3}){1,2}$|^[a-z]+$/i.test(input);
+                if (validColorOrHex) {
+                  return true;
+                } else {
+                  return 'Please enter a valid color name or hexadecimal code.';
+                }
+              }
+        },
+    ]).then((answers) => {
+
+        let outputShape = ''
+        switch (answers.shape) {
+            case 'Triangle':
+                outputShape = new Triangle(`${answers.shapeColor}`, `${answers.text}`, `${answers.textColor}`);
+                break;
+            case 'Square':
+                outputShape = new Square(`${answers.shapeColor}`, `${answers.text}`, `${answers.textColor}`);
+                break;
+            case 'Circle':
+                outputShape = new Circle(`${answers.shapeColor}`, `${answers.text}`, `${answers.textColor}`);
+                break;
+            default:
+                console.log('Invalid shape selected');
+        }
+        // svg template
+        const svgTemplate = `
+        <svg width="300" height="200">
+        \t${outputShape.render()}
+        \t<text x="150" y="${outputShape.axisY}" font-size="40" text-anchor="middle" fill="${outputShape.fontColor}" font-family="Times New Roman">
+        \t\t${outputShape.text}
+        \t</text>
+        </svg>
+        `;
+
+        console.log(svgTemplate);
+        writeToFile('logo.svg', svgTemplate);
+
+    });
+}
+
+init();
