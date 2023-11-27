@@ -1,7 +1,7 @@
 
         <svg width="300" height="200">
-        	<circle cx="150" cy="100" r="50" fill="yellow" />
-        	<text x="150" y="113" font-size="40" text-anchor="middle" fill="green" font-family="Times New Roman">
+        	<polygon points="150, 18 244, 182 56, 182" fill="black" />
+        	<text x="150" y="130" font-size="40" text-anchor="middle" fill="blue" font-family="Times New Roman">
         		svg
         	</text>
         </svg>
